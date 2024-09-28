@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحه اصلی</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body dir="rtl">
+    <div class="container mt-5">
+        <h1 class="text-center">خوش آمدید، {{ user.username }}</h1>
+        <p class="text-center">ایمیل شما: {{ user.email }}</p>
+        <div class="text-center">
+            <a href="{% url 'logout' %}" class="btn btn-danger">خروج</a>
+        </div>
+    </div>
+</body>
+</html>
