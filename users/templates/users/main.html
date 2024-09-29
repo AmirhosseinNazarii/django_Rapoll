@@ -5,15 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>صفحه اصلی</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .nav-item + .nav-item {
+            margin-left: 10px; /* فاصله بین دکمه‌ها */
+        }
+    </style>
 </head>
 <body dir="rtl">
-    <div class="container mt-5">
-        <h1 class="text-center">خوش آمدید، {{ user.username }}</h1>
-        <p class="text-center">ایمیل شما: {{ user.email }}</p>
-        <div class="text-center">
-            <a href="{% url 'logout' %}" class="btn btn-danger">خروج</a>
-            <a href="{% url 'edit_profile' %}" class="btn btn-primary">ویرایش پروفایل</a> <!-- دکمه ویرایش پروفایل -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#"> Rapoll </a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <span class="navbar-text mr-3">خوش آمدید، {{ user.username }}</span>
+                    </li>
+                    <li class="nav-item">
+                        <span class="navbar-text mr-3">ایمیل شما: {{ user.email }}</span>
+                    </li>
+                </ul>
+                <div class="navbar-nav">
+                    <a href="{% url 'logout' %}" class="btn btn-danger nav-link">خروج</a>
+                    <a href="{% url 'edit_profile' %}" class="btn btn-primary nav-link">ویرایش پروفایل</a>
+                </div>
+            </div>
         </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h2 class="text-center">به صفحه اصلی خوش آمدید!</h2>
+        <!-- محتوای دیگر صفحه می‌تواند اینجا قرار بگیرد -->
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
