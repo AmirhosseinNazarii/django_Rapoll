@@ -34,7 +34,12 @@ def login(request):
             user = User.objects.get(username=username)
             if check_password(password, user.password):
                 request.session['user_id'] = user.id  # ذخیره شناسه کاربر در سشن
-                return redirect('main')  # انتقال به صفحه اصلی
+
+                # بررسی ادمین بودن
+                if user.is_admin:
+                    return redirect('panel1')  # هدایت به پنل ادمین
+                else:
+                    return redirect('main')  # هدایت به صفحه اصلی کاربران عادی
             else:
                 messages.error(request, 'رمز عبور اشتباه است.')
         except User.DoesNotExist:
