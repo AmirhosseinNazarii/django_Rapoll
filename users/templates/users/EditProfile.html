@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ویرایش پروفایل</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body dir="rtl">
+    <div class="container mt-5">
+        <h2 class="text-center">ویرایش پروفایل</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">نام کاربری:</label>
+                <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}">
+            </div>
+            <div class="form-group">
+                <label for="email">ایمیل:</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
+            </div>
+            <div class="form-group">
+                <label for="old_password">رمز عبور قبلی:</label>
+                <input type="password" class="form-control" id="old_password" name="old_password" placeholder="رمز عبور قبلی خود را وارد کنید">
+            </div>
+            <div class="form-group">
+                <label for="new_password">رمز عبور جدید:</label>
+                <input type="password" class="form-control" id="new_password" name="new_password" placeholder="رمز عبور جدید خود را وارد کنید">
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-success">ذخیره تغییرات</button>
+            </div>
+            {% if message %}
+                <div class="alert alert-danger mt-3" role="alert">
+                    {{ message }}
+                </div>
+            {% endif %}
+        </form>
+    </div>
+</body>
+</html>
