@@ -48,6 +48,74 @@
             </tbody>
         </table>
     </div>
+
+    <!-- نمایش پیام‌ها -->
+    <div class="container mt-5">
+        {% if messages %}
+            <div>
+                {% for message in messages %}
+                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="container mt-5">
+        <h2>اضافه کردن بلوک جدید</h2>
+        <form method="POST" action="{% url 'add_block' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="city" class="form-label">شهر</label>
+                <select class="form-select" id="city" name="city">
+                    <option value="تهران">تهران</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="neighborhood" class="form-label">محله</label>
+                <select class="form-select" id="neighborhood" name="neighborhood">
+                    <option value="زعفرانیه">زعفرانیه</option>
+                    <option value="نیاوران">نیاوران</option>
+                    <option value="قیطریه">قیطریه</option>
+                    <option value="الهیه">الهیه</option>
+                    <option value="فرمانیه">فرمانیه</option>
+                    <option value="ولنجک">ولنجک</option>
+                    <option value="نازی آباد">نازی آباد</option>
+                    <option value="پاسداران">پاسداران</option>
+                    <option value="سعادت آباد">سعادت آباد</option>
+                    <option value="شهرک غرب">شهرک غرب</option>
+                    <option value="پونک">پونک</option>
+                    <option value="جردن (آفریقا)">جردن (آفریقا)</option>
+                    <option value="میرداماد">میرداماد</option>
+                    <option value="باغ فردوس">باغ فردوس</option>
+                    <option value="ونک">ونک</option>
+                    <option value="جوادیه">جوادیه</option>
+                    <option value="آجودانیه">آجودانیه</option>
+                    <option value="یوسف آباد">یوسف آباد</option>
+                    <option value="تهرانپارس">تهرانپارس</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="street" class="form-label">خیابان</label>
+                <input type="text" class="form-control" id="street" name="street" required>
+            </div>
+            <div class="mb-3">
+                <label for="alley" class="form-label">کوچه</label>
+                <input type="text" class="form-control" id="alley" name="alley" required>
+            </div>
+            <div class="mb-3">
+                <label for="block_number" class="form-label">شماره بلوک</label>
+                <input type="number" class="form-control" id="block_number" name="block_number" required>
+            </div>
+            <div class="mb-3">
+                <label for="price" class="form-label">قیمت</label>
+                <input type="number" class="form-control" id="price" name="price" required>
+            </div>
+            <button type="submit" class="btn btn-success">اضافه کردن بلوک</button>
+        </form>
+    </div>
+
     <!-- اسکریپت‌های جاوااسکریپت بوت‌استرپ -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

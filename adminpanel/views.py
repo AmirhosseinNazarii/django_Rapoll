@@ -1,7 +1,8 @@
 # adminpanel/views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from users.models import User, UserDetails
-
+from .models import Block  # اضافه کردن مدل بلوک
+from django.contrib import messages  # برای استفاده از سیستم پیام‌رسانی
 
 def panel1(request):
     users = User.objects.all()
@@ -50,4 +51,34 @@ def toggle_status(request, user_id):
     user = get_object_or_404(User, id=user_id)
     user.status = not user.status  # تغییر وضعیت کاربر
     user.save()
+    return redirect('panel1')
+
+def add_block(request):
+    if request.method == 'POST':
+        city = request.POST.get('city')
+        neighborhood = request.POST.get('neighborhood')
+        street = request.POST.get('street')
+        alley = request.POST.get('alley')
+        block_number = request.POST.get('block_number')
+        price = request.POST.get('price')
+
+        if city and neighborhood and street and alley and block_number and price:
+            try:
+                # ایجاد بلوک جدید
+                Block.objects.create(
+                    city=city,
+                    neighborhood=neighborhood,
+                    street=street,
+                    alley=alley,
+                    block_number=block_number,
+                    price=price,
+                    status=False  # به صورت پیش‌فرض قابل فروش باشد
+                )
+                messages.success(request, "بلوک جدید با موفقیت اضافه شد.")
+                return redirect('panel1')
+            except Exception as e:
+                messages.error(request, f"خطا در اضافه کردن بلوک: {str(e)}")
+        else:
+            messages.error(request, "لطفاً همه فیلدها را پر کنید.")
+
     return redirect('panel1')
