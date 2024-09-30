@@ -5,8 +5,9 @@ class User(models.Model):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
-    is_admin = models.BooleanField(default=False)  # ستون Is_admin با مقدار پیش فرض 0 (کاربر عادی)
+    is_admin = models.BooleanField(default=False)  # ستون Is_admin با مقدار پیش فرض False (کاربر عادی)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # ستون Balance با مقدار پیش فرض 0
+    status = models.BooleanField(default=False)  # ستون Status با مقدار پیش فرض 0 (غیرفعال)
 
     def __str__(self):
         return self.username
