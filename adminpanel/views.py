@@ -14,7 +14,29 @@ def edit_user(request, user_id):
         user.username = request.POST.get('username')
         user.email = request.POST.get('email')
         user.balance = request.POST.get('balance')
+
+        # ویرایش رمز عبور فقط در صورت وارد کردن مقدار جدید
+        password = request.POST.get('password')
+        if password:
+            user.password = password
+        
+        user.is_admin = request.POST.get('is_admin') == '1'  # تبدیل به Boolean
+        user.status = request.POST.get('status') == '1'  # تبدیل به Boolean
         user.save()
+        
+        # به‌روزرسانی اطلاعات UserDetails
+        details = user.details
+        details.full_name = request.POST.get('full_name')
+        details.last_name = request.POST.get('last_name')
+        details.national_code = request.POST.get('national_code')
+        details.card_number = request.POST.get('card_number')
+        details.phone_number = request.POST.get('phone_number')
+
+        # بارگذاری مجدد کارت ملی اگر فایلی بارگذاری شده باشد
+        if 'national_card' in request.FILES:
+            details.national_card = request.FILES['national_card']
+        
+        details.save()
         return redirect('panel1')
     
     return render(request, 'adminpanel/edit_user.html', {'user': user})
