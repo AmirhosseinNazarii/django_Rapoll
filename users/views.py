@@ -130,3 +130,28 @@ def edit_profile(request):
             return render(request, 'users/EditProfile.html', {'user': user, 'message': message})
 
     return render(request, 'users/EditProfile.html', {'user': user})
+
+def search_blocks(request):
+    city = request.GET.get('city')
+    neighborhood = request.GET.get('neighborhood')
+    street = request.GET.get('street')
+    alley = request.GET.get('alley')
+
+    blocks = Block.objects.filter(
+        city=city,
+        neighborhood=neighborhood,
+        street=street,
+        alley=alley
+    )
+
+    # داده‌های بلوک‌ها را به صورت JSON برمی‌گردانیم
+    block_data = [
+        {
+            'block_number': block.block_number,
+            'price': block.price,
+            'status': block.status
+        }
+        for block in blocks
+    ]
+    
+    return JsonResponse(block_data, safe=False)

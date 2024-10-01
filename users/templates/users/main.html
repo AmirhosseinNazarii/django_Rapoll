@@ -70,7 +70,59 @@
         </form>
 
         <div id="block-results" class="mt-5">
-            <!-- نتایج بلوک‌ها اینجا نمایش داده می‌شود -->
+            <script>
+                $('#block-search-form').submit(function (e) {
+                    e.preventDefault();
+                    var city = $('#city').val();
+                    var neighborhood = $('#neighborhood').val();
+                    var street = $('#street').val();
+                    var alley = $('#alley').val();
+            
+                    // ارسال درخواست به سرور برای دریافت نتایج فیلتر شده
+                    $.ajax({
+                        url: '{% url "search_blocks" %}', // این URL باید به یک view جدید اشاره کند که نتایج را فیلتر می‌کند
+                        method: 'GET',
+                        data: {
+                            city: city,
+                            neighborhood: neighborhood,
+                            street: street,
+                            alley: alley
+                        },
+                        success: function (data) {
+                            // پاک کردن نتایج قبلی
+                            $('#block-results').empty();
+            
+                            // بررسی اینکه داده‌ای دریافت شده یا خیر
+                            if (data.length === 0) {
+                                $('#block-results').append('<div class="col-12"><p>نتیجه‌ای یافت نشد.</p></div>');
+                            } else {
+                                // ایجاد کارت برای هر بلوک
+                                $.each(data, function (index, block) {
+                                    var cardHtml = `
+                                        <div class="col-md-4 mb-4">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">شماره بلوک: ${block.block_number}</h5>
+                                                    <p class="card-text">قیمت: ${block.price} تومان</p>
+                                                    ${block.status === false ? 
+                                                        '<button class="btn btn-success">خرید بلوک</button>' :
+                                                        '<div class="alert alert-danger">این بلوک به فروش رسیده است.</div>'
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                    $('#block-results').append(cardHtml);
+                                });
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.log("خطا در دریافت نتایج: " + error);
+                        }
+                    });
+                });
+            </script>
+            
         </div>
     </div>
 
