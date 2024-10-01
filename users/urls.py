@@ -8,5 +8,9 @@ urlpatterns = [
     path('main/', views.main, name='main'),     # اضافه کردن مسیر صفحه اصلی
     path('logout/', views.logout, name='logout'),  # مسیر خروج
     path('edit_profile/', views.edit_profile, name='edit_profile'),
+    path('block-search/', views.block_search, name='block_search'),
+    path('get_neighborhoods/', views.get_neighborhoods, name='get_neighborhoods'),
+    path('get_streets/', views.get_streets, name='get_streets'),
+    path('get_alleys/', views.get_alleys, name='get_alleys'),
 
 ]

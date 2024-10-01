@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from .forms import SignUpForm
 from django.contrib.auth.hashers import make_password
-
+from adminpanel.models import Block
 from django.contrib.auth.hashers import check_password
 from django.contrib import messages
-
 from django.contrib.auth.hashers import make_password, check_password
 
 
@@ -54,6 +54,50 @@ def main(request):
     else:
         return redirect('login')
     
+def block_search(request):
+    city = request.GET.get('city', '')
+    neighborhood = request.GET.get('neighborhood', '')
+    street = request.GET.get('street', '')
+    alley = request.GET.get('alley', '')
+
+    blocks = Block.objects.all()
+
+    if city:
+        blocks = blocks.filter(city=city)
+    if neighborhood:
+        blocks = blocks.filter(neighborhood=neighborhood)
+    if street:
+        blocks = blocks.filter(street=street)
+    if alley:
+        blocks = blocks.filter(alley=alley)
+
+    return render(request, 'users/main.html', {
+        'blocks': blocks,
+        'selected_city': city,
+        'selected_neighborhood': neighborhood,
+        'selected_street': street,
+        'selected_alley': alley
+    })
+
+
+def get_neighborhoods(request):
+    city = request.GET.get('city')
+    neighborhoods = Block.objects.filter(city=city).values_list('neighborhood', flat=True).distinct()
+    return JsonResponse(list(neighborhoods), safe=False)
+
+def get_streets(request):
+    city = request.GET.get('city')
+    neighborhood = request.GET.get('neighborhood')
+    streets = Block.objects.filter(city=city, neighborhood=neighborhood).values_list('street', flat=True).distinct()
+    return JsonResponse(list(streets), safe=False)
+
+def get_alleys(request):
+    city = request.GET.get('city')
+    neighborhood = request.GET.get('neighborhood')
+    street = request.GET.get('street')
+    alleys = Block.objects.filter(city=city, neighborhood=neighborhood, street=street).values_list('alley', flat=True).distinct()
+    return JsonResponse(list(alleys), safe=False)
+
 def logout(request):
     request.session.flush()  # پاک کردن تمام سشن‌ها
     return redirect('login')

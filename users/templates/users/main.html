@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>صفحه اصلی</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
     <style>
         .nav-item + .nav-item {
             margin-left: 10px; /* فاصله بین دکمه‌ها */
@@ -33,12 +35,189 @@
     </nav>
 
     <div class="container mt-5">
-        <h2 class="text-center">به صفحه اصلی خوش آمدید!</h2>
-        <!-- محتوای دیگر صفحه می‌تواند اینجا قرار بگیرد -->
+        <h2>خرید بلوک</h2>
+        <form id="block-search-form">
+            <div class="form-group">
+                <label for="city">شهر:</label>
+                <select class="form-control" id="city" name="city">
+                    <option value="">انتخاب شهر</option>
+                    <option value="تهران">تهران</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="neighborhood">محله:</label>
+                <select class="form-control" id="neighborhood" name="neighborhood" disabled>
+                    <option value="">ابتدا شهر را انتخاب کنید</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="street">خیابان:</label>
+                <select class="form-control" id="street" name="street" disabled>
+                    <option value="">ابتدا محله را انتخاب کنید</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="alley">کوچه:</label>
+                <select class="form-control" id="alley" name="alley" disabled>
+                    <option value="">ابتدا خیابان را انتخاب کنید</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="search-btn" disabled>جستجو</button>
+        </form>
+
+        <div id="block-results" class="mt-5">
+            <script>
+                $('#block-search-form').submit(function (e) {
+                    e.preventDefault();
+                    var city = $('#city').val();
+                    var neighborhood = $('#neighborhood').val();
+                    var street = $('#street').val();
+                    var alley = $('#alley').val();
+            
+                    // ارسال درخواست به سرور برای دریافت نتایج فیلتر شده
+                    $.ajax({
+                        url: '{% url "search_blocks" %}', // این URL باید به یک view جدید اشاره کند که نتایج را فیلتر می‌کند
+                        method: 'GET',
+                        data: {
+                            city: city,
+                            neighborhood: neighborhood,
+                            street: street,
+                            alley: alley
+                        },
+                        success: function (data) {
+                            // پاک کردن نتایج قبلی
+                            $('#block-results').empty();
+            
+                            // بررسی اینکه داده‌ای دریافت شده یا خیر
+                            if (data.length === 0) {
+                                $('#block-results').append('<div class="col-12"><p>نتیجه‌ای یافت نشد.</p></div>');
+                            } else {
+                                // ایجاد کارت برای هر بلوک
+                                $.each(data, function (index, block) {
+                                    var cardHtml = `
+                                        <div class="col-md-4 mb-4">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">شماره بلوک: ${block.block_number}</h5>
+                                                    <p class="card-text">قیمت: ${block.price} تومان</p>
+                                                    ${block.status === false ? 
+                                                        '<button class="btn btn-success">خرید بلوک</button>' :
+                                                        '<div class="alert alert-danger">این بلوک به فروش رسیده است.</div>'
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                    $('#block-results').append(cardHtml);
+                                });
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.log("خطا در دریافت نتایج: " + error);
+                        }
+                    });
+                });
+            </script>
+            
+        </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // وقتی کاربر شهر را انتخاب می‌کند
+        $('#city').change(function () {
+            var city = $(this).val();
+            if (city) {
+                $.ajax({
+                    url: '{% url "get_neighborhoods" %}',
+                    data: {city: city},
+                    success: function (data) {
+                        $('#neighborhood').empty().append('<option value="">انتخاب محله</option>');
+                        $.each(data, function (index, value) {
+                            $('#neighborhood').append('<option value="' + value + '">' + value + '</option>');
+                        });
+                        $('#neighborhood').prop('disabled', false);
+                        $('#street').prop('disabled', true).empty().append('<option value="">ابتدا محله را انتخاب کنید</option>');
+                        $('#alley').prop('disabled', true).empty().append('<option value="">ابتدا خیابان را انتخاب کنید</option>');
+                    }
+                });
+            } else {
+                $('#neighborhood').prop('disabled', true).empty().append('<option value="">ابتدا شهر را انتخاب کنید</option>');
+                $('#street').prop('disabled', true).empty().append('<option value="">ابتدا محله را انتخاب کنید</option>');
+                $('#alley').prop('disabled', true).empty().append('<option value="">ابتدا خیابان را انتخاب کنید</option>');
+            }
+        });
+
+        // وقتی کاربر محله را انتخاب می‌کند
+        $('#neighborhood').change(function () {
+            var city = $('#city').val();
+            var neighborhood = $(this).val();
+            if (neighborhood) {
+                $.ajax({
+                    url: '{% url "get_streets" %}',
+                    data: {city: city, neighborhood: neighborhood},
+                    success: function (data) {
+                        $('#street').empty().append('<option value="">انتخاب خیابان</option>');
+                        $.each(data, function (index, value) {
+                            $('#street').append('<option value="' + value + '">' + value + '</option>');
+                        });
+                        $('#street').prop('disabled', false);
+                        $('#alley').prop('disabled', true).empty().append('<option value="">ابتدا خیابان را انتخاب کنید</option>');
+                    }
+                });
+            } else {
+                $('#street').prop('disabled', true).empty().append('<option value="">ابتدا محله را انتخاب کنید</option>');
+                $('#alley').prop('disabled', true).empty().append('<option value="">ابتدا خیابان را انتخاب کنید</option>');
+            }
+        });
+
+        // وقتی کاربر خیابان را انتخاب می‌کند
+        $('#street').change(function () {
+            var city = $('#city').val();
+            var neighborhood = $('#neighborhood').val();
+            var street = $(this).val();
+            if (street) {
+                $.ajax({
+                    url: '{% url "get_alleys" %}',
+                    data: {city: city, neighborhood: neighborhood, street: street},
+                    success: function (data) {
+                        $('#alley').empty().append('<option value="">انتخاب کوچه</option>');
+                        $.each(data, function (index, value) {
+                            $('#alley').append('<option value="' + value + '">' + value + '</option>');
+                        });
+                        $('#alley').prop('disabled', false);
+                    }
+                });
+            } else {
+                $('#alley').prop('disabled', true).empty().append('<option value="">ابتدا خیابان را انتخاب کنید</option>');
+            }
+        });
+
+        // فعال کردن دکمه جستجو پس از انتخاب تمام فیلترها
+        $('#alley').change(function () {
+            var city = $('#city').val();
+            var neighborhood = $('#neighborhood').val();
+            var street = $('#street').val();
+            var alley = $(this).val();
+            if (city && neighborhood && street && alley) {
+                $('#search-btn').prop('disabled', false);
+            } else {
+                $('#search-btn').prop('disabled', true);
+            }
+        });
+
+        // ارسال فرم و دریافت نتایج
+        $('#block-search-form').submit(function (e) {
+            e.preventDefault();
+            // جستجوی بلوک‌ها را اینجا پیاده‌سازی می‌کنیم
+        });
+    </script>
+
+    
+
+    
 </body>
 </html>
