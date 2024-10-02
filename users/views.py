@@ -147,6 +147,7 @@ def search_blocks(request):
     # داده‌های بلوک‌ها را به صورت JSON برمی‌گردانیم
     block_data = [
         {
+            'id':block.id,
             'block_number': block.block_number,
             'price': block.price,
             'status': block.status
