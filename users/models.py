@@ -1,5 +1,8 @@
 from django.db import models
 
+
+
+
 class User(models.Model):
     username = models.CharField(max_length=100, unique=True)
     email = models.EmailField(unique=True)
@@ -25,4 +28,14 @@ class UserDetails(models.Model):
     def __str__(self):
         return self.user.username
 
+class BlockActive(models.Model):
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='blocks_active')
+    city = models.CharField(max_length=50)
+    neighborhood = models.CharField(max_length=100)
+    street = models.CharField(max_length=100)
+    alley = models.CharField(max_length=100)
+    block_number = models.IntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
 
+    def __str__(self):
+        return f'Block {self.block_number} in {self.neighborhood}, {self.city}'
