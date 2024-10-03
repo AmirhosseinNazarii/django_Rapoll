@@ -12,6 +12,8 @@ urlpatterns = [
     path('get_neighborhoods/', views.get_neighborhoods, name='get_neighborhoods'),
     path('get_streets/', views.get_streets, name='get_streets'),
     path('get_alleys/', views.get_alleys, name='get_alleys'),
-     path('search_blocks/', views.search_blocks, name='search_blocks'),
+    path('search_blocks/', views.search_blocks, name='search_blocks'),
+    path('buy_block/', views.buy_block, name='buy_block'),
+    path('finalize_purchase/', views.finalize_purchase, name='finalize_purchase'),
 
 ]

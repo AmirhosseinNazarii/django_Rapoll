@@ -99,19 +99,27 @@
                                 // ایجاد کارت برای هر بلوک
                                 $.each(data, function (index, block) {
                                     var cardHtml = `
-                                        <div class="col-md-4 mb-4">
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">شماره بلوک: ${block.block_number}</h5>
-                                                    <p class="card-text">قیمت: ${block.price} تومان</p>
-                                                    <p class="card-text">شناسه بلوک: ${block.id} </p>
-                                                    ${block.status === false ? 
-                                                        '<button class="btn btn-success">خرید بلوک</button>' :
-                                                        '<div class="alert alert-danger">این بلوک به فروش رسیده است.</div>'
-                                                    }
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <!-- در داخل کارت هر بلوک -->
+<div class="col-md-4 mb-4">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">شماره بلوک: ${block.block_number}</h5>
+            <p class="card-text">قیمت: ${block.price} تومان</p>
+            <p class="card-text">شناسه بلوک: ${block.id} </p>
+            ${block.status === false ? 
+                `<form action="{% url 'buy_block' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="block_id" value="${block.id}">
+                    <input type="hidden" name="block_number" value="${block.block_number}">
+                    <input type="hidden" name="price" value="${block.price}">
+                    <button type="submit" class="btn btn-success">خرید بلوک</button>
+                </form>` :
+                '<div class="alert alert-danger">این بلوک به فروش رسیده است.</div>'
+            }
+        </div>
+    </div>
+</div>
+
                                     `;
                                     $('#block-results').append(cardHtml);
                                 });

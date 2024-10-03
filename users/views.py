@@ -6,9 +6,55 @@ from adminpanel.models import Block
 from django.contrib.auth.hashers import check_password
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password, check_password
-
-
 from .models import User
+from adminpanel.models import Block
+from .models import User, BlockActive
+
+
+
+def buy_block(request):
+    if request.method == 'POST':
+        block_id = request.POST['block_id']
+        block_number = request.POST['block_number']
+        price = float(request.POST['price'])
+        user = User.objects.get(id=request.session['user_id'])
+        
+        # ارسال اطلاعات به صفحه خرید
+        return render(request, 'users/BuyBlock.html', {
+            'block_id': block_id,
+            'block_number': block_number,
+            'price': price,
+            'user': user
+        })
+
+def finalize_purchase(request):
+    if request.method == 'POST':
+        block_id = request.POST['block_id']
+        price = float(request.POST['price'])
+        user = User.objects.get(id=request.session['user_id'])
+
+        # بررسی موجودی کاربر
+        if user.balance >= price:
+            # کسر موجودی کاربر
+            user.balance -= price
+            user.save()
+
+            # ذخیره اطلاعات بلوک خریداری شده
+            BlockActive.objects.create(
+                user=user,
+                block_number=request.POST['block_number'],
+                price=price,
+                city='تهران',  # برای سادگی، می‌توانید اطلاعات دقیق‌تر اضافه کنید
+                neighborhood='محله',
+                street='خیابان',
+                alley='کوچه'
+            )
+            messages.success(request, 'خرید بلوک با موفقیت انجام شد!')
+            return redirect('main')
+        else:
+            messages.error(request, 'موجودی حساب شما کافی نیست، لطفاً حساب خود را شارژ کنید.')
+            return redirect('buy_block')
+
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)

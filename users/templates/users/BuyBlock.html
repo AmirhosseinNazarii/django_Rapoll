@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خرید بلوک</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body dir="rtl">
+    <div class="container mt-5">
+        <h2>خرید بلوک</h2>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">شماره بلوک: {{ block_number }}</h5>
+                <p class="card-text">قیمت: {{ price }} تومان</p>
+                <p class="card-text">شناسه بلوک: {{ block_id }}</p>
+                <p class="card-text">موجودی شما: {{ user.balance }} تومان</p>
+                
+                <form id="buy-block-form" action="{% url 'finalize_purchase' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="block_id" value="{{ block_id }}">
+                    <input type="hidden" name="block_number" value="{{ block_number }}">
+                    <input type="hidden" name="price" value="{{ price }}">
+
+                    <div class="form-check my-3">
+                        <input class="form-check-input" type="checkbox" id="confirmCheckbox">
+                        <label class="form-check-label" for="confirmCheckbox">
+                            توجه! قبل از خرید بلوک مورد نظر از صحت اطلاعات شخصی خود اطمینان حاصل کنید. درج اطلاعات غلط منجر به مسدود شدن دارایی شما می‌شود و پیگرد قانونی خواهد داشت.
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="finalizePurchaseButton" disabled>خرید نهایی</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        // فعال‌سازی دکمه خرید نهایی فقط در صورت تیک زدن چک باکس
+        $('#confirmCheckbox').change(function () {
+            if ($(this).is(':checked')) {
+                $('#finalizePurchaseButton').prop('disabled', false);
+            } else {
+                $('#finalizePurchaseButton').prop('disabled', true);
+            }
+        });
+    </script>
+</body>
+</html>
