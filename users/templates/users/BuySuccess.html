@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فاکتور خرید</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body dir="rtl">
+    <div class="container mt-5">
+        <h2>فاکتور خرید</h2>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">خرید شما با موفقیت انجام شد!</h5>
+                <p class="card-text">شماره بلوک: {{ block_number }}</p>
+                <p class="card-text">قیمت: {{ price }} تومان</p>
+                <p class="card-text">نام کاربری: {{ user.username }}</p>
+                <p class="card-text">موجودی فعلی شما: {{ user.balance }} تومان</p>
+                <a href="{% url 'main' %}" class="btn btn-success">بازگشت به صفحه اصلی</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

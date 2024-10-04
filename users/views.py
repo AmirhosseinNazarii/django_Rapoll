@@ -9,6 +9,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from .models import User
 from adminpanel.models import Block
 from .models import User, BlockActive
+from decimal import Decimal
 
 
 
@@ -30,31 +31,42 @@ def buy_block(request):
 def finalize_purchase(request):
     if request.method == 'POST':
         block_id = request.POST['block_id']
-        price = float(request.POST['price'])
+        block_number = request.POST['block_number']
+        price = Decimal(request.POST['price'])  # تبدیل price به Decimal
         user = User.objects.get(id=request.session['user_id'])
+
+        # تبدیل موجودی کاربر به Decimal
+        user.balance = Decimal(user.balance)
 
         # بررسی موجودی کاربر
         if user.balance >= price:
-            # کسر موجودی کاربر
+            # کسر موجودی کاربر (هر دو مقدار از نوع Decimal هستند)
             user.balance -= price
             user.save()
 
             # ذخیره اطلاعات بلوک خریداری شده
-            BlockActive.objects.create(
+            block_active = BlockActive.objects.create(
                 user=user,
-                block_number=request.POST['block_number'],
+                block_number=block_number,
                 price=price,
-                city='تهران',  # برای سادگی، می‌توانید اطلاعات دقیق‌تر اضافه کنید
+                city='تهران',
                 neighborhood='محله',
                 street='خیابان',
                 alley='کوچه'
             )
-            messages.success(request, 'خرید بلوک با موفقیت انجام شد!')
-            return redirect('main')
-        else:
-            messages.error(request, 'موجودی حساب شما کافی نیست، لطفاً حساب خود را شارژ کنید.')
-            return redirect('buy_block')
 
+            # انتقال کاربر به صفحه BuySuccess همراه با اطلاعات خرید
+            return render(request, 'users/BuySuccess.html', {
+                'block_number': block_number,
+                'price': price,
+                'user': user
+            })
+        else:
+            messages.error(request, 'موجودی حساب شما کافی نیست.')
+            return redirect('buy_block')
+        
+
+        
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
