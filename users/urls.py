@@ -15,5 +15,6 @@ urlpatterns = [
     path('search_blocks/', views.search_blocks, name='search_blocks'),
     path('buy_block/', views.buy_block, name='buy_block'),
     path('finalize_purchase/', views.finalize_purchase, name='finalize_purchase'),
+    path('buy-failed/', views.finalize_purchase, name='buy_failed'),  # مسیر جدید برای BuyFailed
 
 ]

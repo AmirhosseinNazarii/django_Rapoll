@@ -40,7 +40,7 @@ def finalize_purchase(request):
 
         # بررسی موجودی کاربر
         if user.balance >= price:
-            # کسر موجودی کاربر (هر دو مقدار از نوع Decimal هستند)
+            # کسر موجودی کاربر
             user.balance -= price
             user.save()
 
@@ -55,15 +55,15 @@ def finalize_purchase(request):
                 alley='کوچه'
             )
 
-            # انتقال کاربر به صفحه BuySuccess همراه با اطلاعات خرید
+            # انتقال کاربر به صفحه BuySuccess
             return render(request, 'users/BuySuccess.html', {
                 'block_number': block_number,
                 'price': price,
                 'user': user
             })
         else:
-            messages.error(request, 'موجودی حساب شما کافی نیست.')
-            return redirect('buy_block')
+            # انتقال کاربر به صفحه BuyFailed
+            return render(request, 'users/BuyFailed.html')
         
 
         
