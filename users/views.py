@@ -55,6 +55,14 @@ def finalize_purchase(request):
                 alley='کوچه'
             )
 
+            # تغییر وضعیت بلوک به 1
+            try:
+                block = Block.objects.get(id=block_id)
+                block.status = True  # تغییر وضعیت به ۱ (True)
+                block.save()
+            except Block.DoesNotExist:
+                messages.error(request, 'بلوک یافت نشد.')
+
             # انتقال کاربر به صفحه BuySuccess
             return render(request, 'users/BuySuccess.html', {
                 'block_number': block_number,
