@@ -213,6 +213,10 @@ def search_blocks(request):
     # داده‌های بلوک‌ها را به صورت JSON برمی‌گردانیم
     block_data = [
         {
+            'neighborhood':block.neighborhood,
+            'street':block.street,
+            'alley':block.alley,
+            'city':block.city,
             'id':block.id,
             'block_number': block.block_number,
             'price': block.price,

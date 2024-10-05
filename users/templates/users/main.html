@@ -106,12 +106,21 @@
             <h5 class="card-title">شماره بلوک: ${block.block_number}</h5>
             <p class="card-text">قیمت: ${block.price} تومان</p>
             <p class="card-text">شناسه بلوک: ${block.id} </p>
+            <p class="card-text">شهر: ${block.city} </p>
+            <p class="card-text">کوچه: ${block.alley} </p>
+            <p class="card-text">خیابان: ${block.street} </p>
+            <p class="card-text">محله: ${block.neighborhood} </p>
+           
             ${block.status === false ? 
                 `<form action="{% url 'buy_block' %}" method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="block_id" value="${block.id}">
                     <input type="hidden" name="block_number" value="${block.block_number}">
                     <input type="hidden" name="price" value="${block.price}">
+                    <input type="hidden" name="city" value="${block.city}">
+                    <input type="hidden" name="neighborhood" value="${block.neighborhood}">
+                    <input type="hidden" name="street" value="${block.street}">
+                    <input type="hidden" name="alley" value="${block.alley}">
                     <button type="submit" class="btn btn-success">خرید بلوک</button>
                 </form>` :
                 '<div class="alert alert-danger">این بلوک به فروش رسیده است.</div>'
