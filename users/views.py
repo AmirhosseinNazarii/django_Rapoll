@@ -18,6 +18,10 @@ def buy_block(request):
         block_id = request.POST['block_id']
         block_number = request.POST['block_number']
         price = float(request.POST['price'])
+        city = request.POST['city']
+        neighborhood = request.POST['neighborhood']
+        street = request.POST['street']
+        alley = request.POST['alley']
         user = User.objects.get(id=request.session['user_id'])
         
         # ارسال اطلاعات به صفحه خرید
@@ -25,14 +29,23 @@ def buy_block(request):
             'block_id': block_id,
             'block_number': block_number,
             'price': price,
+            'city': city,
+            'neighborhood': neighborhood,
+            'street': street,
+            'alley': alley,
             'user': user
         })
+
 
 def finalize_purchase(request):
     if request.method == 'POST':
         block_id = request.POST['block_id']
         block_number = request.POST['block_number']
         price = Decimal(request.POST['price'])  # تبدیل price به Decimal
+        city = request.POST['city']
+        neighborhood = request.POST['neighborhood']
+        street = request.POST['street']
+        alley = request.POST['alley']
         user = User.objects.get(id=request.session['user_id'])
 
         # تبدیل موجودی کاربر به Decimal
@@ -49,26 +62,30 @@ def finalize_purchase(request):
                 user=user,
                 block_number=block_number,
                 price=price,
-                city='تهران',
-                neighborhood='محله',
-                street='خیابان',
-                alley='کوچه'
+                city=city,
+                neighborhood=neighborhood,
+                street=street,
+                alley=alley
             )
 
-            # تغییر وضعیت بلوک به 1
+            # تغییر وضعیت بلوک به فروخته شده
             try:
                 block = Block.objects.get(id=block_id)
-                block.status = True  # تغییر وضعیت به ۱ (True)
+                block.status = True  # تغییر وضعیت به True (فروخته شده)
                 block.save()
             except Block.DoesNotExist:
                 messages.error(request, 'بلوک یافت نشد.')
 
             # انتقال کاربر به صفحه BuySuccess
             return render(request, 'users/BuySuccess.html', {
-                'block_number': block_number,
-                'price': price,
-                'user': user
-            })
+    'block_number': block_number,
+    'price': price,
+    'user': user,
+    'city': city,
+    'neighborhood': neighborhood,
+    'street': street,
+    'alley': alley
+})
         else:
             # انتقال کاربر به صفحه BuyFailed
             return render(request, 'users/BuyFailed.html')

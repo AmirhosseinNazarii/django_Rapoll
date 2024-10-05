@@ -14,6 +14,10 @@
                 <h5 class="card-title">شماره بلوک: {{ block_number }}</h5>
                 <p class="card-text">قیمت: {{ price }} تومان</p>
                 <p class="card-text">شناسه بلوک: {{ block_id }}</p>
+                <p class="card-text">شهر: {{ city }}</p>
+                <p class="card-text"> محله: {{ neighborhood }}</p>
+                <p class="card-text"> خیابان: {{ street }}</p>
+                <p class="card-text"> کوچه: {{ alley }}</p>
                 <p class="card-text">موجودی شما: {{ user.balance }} تومان</p>
                 
                 <form id="buy-block-form" action="{% url 'finalize_purchase' %}" method="POST">
@@ -21,7 +25,11 @@
                     <input type="hidden" name="block_id" value="{{ block_id }}">
                     <input type="hidden" name="block_number" value="{{ block_number }}">
                     <input type="hidden" name="price" value="{{ price }}">
-
+                    <input type="hidden" name="city" value="{{ city }}">
+                    <input type="hidden" name="neighborhood" value="{{ neighborhood }}">
+                    <input type="hidden" name="street" value="{{ street }}">
+                    <input type="hidden" name="alley" value="{{ alley }}">
+                
                     <div class="form-check my-3">
                         <input class="form-check-input" type="checkbox" id="confirmCheckbox">
                         <label class="form-check-label" for="confirmCheckbox">
