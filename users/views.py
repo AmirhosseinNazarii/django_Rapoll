@@ -10,6 +10,7 @@ from .models import User
 from adminpanel.models import Block
 from .models import User, BlockActive
 from decimal import Decimal
+from .models import BlockActive
 
 
 
@@ -243,3 +244,13 @@ def search_blocks(request):
     ]
     
     return JsonResponse(block_data, safe=False)
+
+def buylist(request):
+    user_id = request.session.get('user_id')  # گرفتن user_id از session
+    if user_id:
+        user = User.objects.get(id=user_id)
+        purchases = BlockActive.objects.filter(user=user)  # فیلتر کردن خریدها بر اساس user_id
+
+        return render(request, 'users/buylist.html', {'purchases': purchases})
+    else:
+        return redirect('login')

@@ -16,5 +16,6 @@ urlpatterns = [
     path('buy_block/', views.buy_block, name='buy_block'),
     path('finalize_purchase/', views.finalize_purchase, name='finalize_purchase'),
     path('buy-failed/', views.finalize_purchase, name='buy_failed'),  # مسیر جدید برای BuyFailed
+    path('buylist/', views.buylist, name='buylist'),  # مسیر جدید برای صفحه buylist
 
 ]
