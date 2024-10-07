@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خرید بلوک از کاربر</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>خرید بلوک از کاربر</h2>
+    <form method="GET" action="">
+        <div class="row">
+            <div class="col-md-3">
+                <label for="city">شهر</label>
+                <select class="form-control" id="city" name="city">
+                    <option value="">انتخاب شهر</option>
+                    <!-- شهرهای موجود را اینجا قرار دهید -->
+                    {% for city in cities %}
+                    <option value="{{ city }}">{{ city }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="neighborhood">محله</label>
+                <select class="form-control" id="neighborhood" name="neighborhood">
+                    <option value="">انتخاب محله</option>
+                    <!-- محله‌ها براساس شهر -->
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="street">خیابان</label>
+                <select class="form-control" id="street" name="street">
+                    <option value="">انتخاب خیابان</option>
+                    <!-- خیابان‌ها براساس محله -->
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="alley">کوچه</label>
+                <select class="form-control" id="alley" name="alley">
+                    <option value="">انتخاب کوچه</option>
+                    <!-- کوچه‌ها براساس خیابان -->
+                </select>
+            </div>
+        </div>
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">جستجو</button>
+        </div>
+    </form>
+
+    <div class="mt-5">
+        <h3>نتایج جستجو:</h3>
+        <div class="list-group">
+            {% for transaction in transactions %}
+            <div class="list-group-item">
+                <h4>بلوک شماره {{ transaction.block.block_number }} - قیمت: {{ transaction.price }} تومان</h4>
+                <p>شهر: {{ transaction.city }}, محله: {{ transaction.neighborhood }}, خیابان: {{ transaction.street }}, کوچه: {{ transaction.alley }}</p>
+                <form method="POST" action="{% url 'final_buy_from_user' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="transaction_id" value="{{ transaction.id }}">
+                    <button type="submit" class="btn btn-success">خرید بلوک</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // آژاکس برای فیلتر زنجیره‌ای
+    $('#city').change(function() {
+        var city = $(this).val();
+        $.getJSON("{% url 'get_neighborhoods' %}?city=" + city, function(data) {
+            $('#neighborhood').empty().append('<option value="">انتخاب محله</option>');
+            $.each(data, function(index, value) {
+                $('#neighborhood').append('<option value="' + value + '">' + value + '</option>');
+            });
+        });
+    });
+
+    $('#neighborhood').change(function() {
+        var city = $('#city').val();
+        var neighborhood = $(this).val();
+        $.getJSON("{% url 'get_streets' %}?city=" + city + "&neighborhood=" + neighborhood, function(data) {
+            $('#street').empty().append('<option value="">انتخاب خیابان</option>');
+            $.each(data, function(index, value) {
+                $('#street').append('<option value="' + value + '">' + value + '</option>');
+            });
+        });
+    });
+
+    $('#street').change(function() {
+        var city = $('#city').val();
+        var neighborhood = $('#neighborhood').val();
+        var street = $(this).val();
+        $.getJSON("{% url 'get_alleys' %}?city=" + city + "&neighborhood=" + neighborhood + "&street=" + street, function(data) {
+            $('#alley').empty().append('<option value="">انتخاب کوچه</option>');
+            $.each(data, function(index, value) {
+                $('#alley').append('<option value="' + value + '">' + value + '</option>');
+            });
+        });
+    });
+</script>
+</body>
+</html>

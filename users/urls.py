@@ -19,5 +19,7 @@ urlpatterns = [
     path('buylist/', views.buylist, name='buylist'),  # مسیر جدید برای صفحه buylist
     path('sellblock/', views.sell_block, name='sellblock'),
     path('list_block/<int:block_id>/', views.list_block, name='list_block'),
+    path('buy_from_user/', views.buy_from_user, name='buy_from_user'),  # مسیر خرید از کاربر
+    path('final_buy_from_user/', views.final_buy_from_user, name='final_buy_from_user')  # مسیر نهایی‌سازی خرید
 
 ]
