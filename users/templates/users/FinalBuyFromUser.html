@@ -20,11 +20,11 @@
         </div>
     </div>
 
-    <form method="POST" action="{% url 'final_buy_from_user' %}">
+    <form method="POST" action="{% url 'main' %}">
         {% csrf_token %}
         <input type="hidden" name="transaction_id" value="{{ transaction.id }}">
         <div class="mt-3">
-            <button type="submit" class="btn btn-success">خرید نهایی</button>
+            <button type="submit" class="btn btn-success">صفحه اصلی </button>
         </div>
     </form>
 
