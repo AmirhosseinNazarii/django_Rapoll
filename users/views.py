@@ -334,10 +334,44 @@ def buy_from_user(request):
 
 def final_buy_from_user(request):
     if request.method == 'POST':
-        transaction_id = request.POST.get('transaction_id')
+        transaction_id = request.POST['transaction_id']
+        user = User.objects.get(id=request.session['user_id'])
         transaction = Transaction.objects.get(id=transaction_id)
 
-        return render(request, 'users/FinallBuyFromUser.html', {
-            'transaction': transaction
-        })
+        # تبدیل موجودی خریدار به Decimal
+        user.balance = Decimal(user.balance)
+        block_price = Decimal(transaction.price)
+        
+        # بررسی موجودی کاربر
+        if user.balance >= block_price:
+            # کسر موجودی از خریدار
+            user.balance -= block_price
+            user.save()
+
+            # اضافه کردن موجودی به فروشنده
+            seller = transaction.seller
+            seller.balance = Decimal(seller.balance) + block_price
+            seller.save()
+
+            # آپدیت مالکیت بلوک
+            block = transaction.block
+            block.user = user  # انتقال مالکیت به خریدار جدید
+            block.price = block_price  # آپدیت قیمت جدید
+            block.save()
+
+            # آپدیت وضعیت تراکنش
+            transaction.status = True  # معامله نهایی شده
+            transaction.buyer = user  # ثبت خریدار
+            transaction.save()
+
+            # پیام موفقیت
+            messages.success(request, 'خرید بلوک با موفقیت انجام شد.')
+            return redirect('main')  # انتقال به صفحه اصلی
+        else:
+            # اگر موجودی کافی نبود
+            return render(request, 'users/FinalBuyFromUser.html', {
+                'block': transaction.block,
+                'transaction': transaction,
+                'insufficient_funds': True
+            })
     
