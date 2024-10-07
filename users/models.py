@@ -43,7 +43,7 @@ class BlockActive(models.Model):
     # مدل جدید برای ذخیره اطلاعات خرید و فروش بلوک‌ها
 class Transaction(models.Model):
     seller = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='transactions_selling')  # فروشنده
-    buyer = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='transactions_buying')  # خریدار
+    buyer = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True, blank=True, related_name='transactions_buying')  # خریدار می‌تواند null باشد
     block = models.ForeignKey('users.BlockActive', on_delete=models.CASCADE, related_name='transactions')  # بلوک معامله شده
     price = models.DecimalField(max_digits=10, decimal_places=2)  # قیمت بلوک
     status = models.BooleanField(default=False)  # وضعیت معامله (False: باز، True: تکمیل‌شده)

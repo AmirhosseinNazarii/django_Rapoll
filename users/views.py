@@ -10,6 +10,7 @@ from .models import User
 from adminpanel.models import Block
 from .models import User, BlockActive
 from decimal import Decimal
+from .models import Transaction
 from .models import BlockActive
 
 
@@ -254,3 +255,55 @@ def buylist(request):
         return render(request, 'users/buylist.html', {'purchases': purchases})
     else:
         return redirect('login')
+    
+def sell_block(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
+    
+    user = User.objects.get(id=user_id)
+    blocks = BlockActive.objects.filter(user=user)  # بلوک‌های کاربر
+
+    # اضافه کردن اطلاعات اضافی به هر بلوک برای نمایش در صفحه
+    for block in blocks:
+        block.is_listed = Transaction.objects.filter(block=block, status=False).exists()  # آیا آگهی شده؟
+        block.max_price = block.price * Decimal('1.22')  # حداکثر قیمت مجاز
+
+    return render(request, 'users/sellblock.html', {'blocks': blocks})
+
+def list_block(request, block_id):
+    if request.method == 'POST':
+        user_id = request.session.get('user_id')
+        if not user_id:
+            return redirect('login')
+
+        block = BlockActive.objects.get(id=block_id)
+        user = User.objects.get(id=user_id)
+
+        # بررسی اینکه بلوک قبلاً آگهی نشده باشد
+        existing_transaction = Transaction.objects.filter(block=block, status=False).exists()
+        if existing_transaction:
+            messages.error(request, 'شما قبلا این بلوک را آگهی کرده‌اید.')
+            return redirect('sellblock')
+
+        price = Decimal(request.POST.get('price'))
+        max_price = block.price * Decimal('1.22')
+
+        # بررسی محدودیت قیمت
+        if price > max_price:
+            messages.error(request, f'قیمت نباید بیشتر از {max_price} تومان باشد.')
+            return redirect('sellblock')
+
+        # ثبت آگهی جدید
+        Transaction.objects.create(
+            seller=user,
+            block=block,
+            price=price,
+            city=block.city,
+            neighborhood=block.neighborhood,
+            street=block.street,
+            alley=block.alley
+        )
+
+        messages.success(request, 'آگهی شما با موفقیت ثبت شد.')
+        return redirect('sellblock')

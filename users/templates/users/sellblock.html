@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فروش بلوک‌ها</title>
+    <!-- لینک Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">فروش بلوک‌ها</h2>
+        <div class="row">
+            {% for block in blocks %}
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">بلوک شماره {{ block.block_number }}</h5>
+                        <p class="card-text">
+                            <strong>شهر:</strong> {{ block.city }}<br>
+                            <strong>محله:</strong> {{ block.neighborhood }}<br>
+                            <strong>خیابان:</strong> {{ block.street }}<br>
+                            <strong>کوچه:</strong> {{ block.alley }}<br>
+                            <strong>قیمت خرید:</strong> {{ block.price }} تومان
+                        </p>
+
+                        <!-- بررسی وضعیت آگهی برای بلوک -->
+                        {% if not block.is_listed %}
+                        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#sellForm{{ block.id }}" aria-expanded="false" aria-controls="sellForm{{ block.id }}">
+                            فروش
+                        </button>
+
+                        <div class="collapse mt-3" id="sellForm{{ block.id }}">
+                            <form method="POST" action="{% url 'list_block' block.id %}">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="price">قیمت فروش (تا حداکثر {{ block.max_price }} تومان):</label>
+                                    <input type="number" name="price" class="form-control" max="{{ block.max_price }}" required>
+                                </div>
+                                <button type="submit" class="btn btn-success">ثبت آگهی</button>
+                            </form>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-warning">این بلوک قبلاً آگهی شده است.</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
