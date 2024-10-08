@@ -52,3 +52,35 @@ def close_ticket(request, ticket_id):
     ticket.status = 'closed'
     ticket.save()
     return redirect('support')
+
+def ticket_detail(request, ticket_id):
+    ticket = get_object_or_404(Ticket, ticket_id=ticket_id)
+
+    if request.method == 'POST':
+        # دریافت پیام جدید
+        message = request.POST['message']
+        attachment = request.FILES.get('attachment')
+
+        # بررسی طول پیام
+        if len(message) > 500:
+            messages.error(request, 'طول پیام نباید بیش از 500 کاراکتر باشد.')
+            return redirect('ticket_detail', ticket_id=ticket_id)
+
+        # بررسی فایل پیوست
+        if attachment:
+            if attachment.size > 1024 * 1024:
+                messages.error(request, 'حجم فایل نباید بیش از 1 مگابایت باشد.')
+                return redirect('ticket_detail', ticket_id=ticket_id)
+            fs = FileSystemStorage()
+            filename = fs.save(attachment.name, attachment)
+        else:
+            filename = None
+
+        # ذخیره پیام جدید (اینجا می‌توانید مدلی برای ذخیره پیام‌های جدید اضافه کنید)
+        # Message.objects.create(ticket=ticket, user=request.user, content=message, attachment=filename)
+
+        messages.success(request, 'پیام شما با موفقیت ارسال شد.')
+        return redirect('ticket_detail', ticket_id=ticket_id)
+
+    return render(request, 'support/ticket_detail.html', {'ticket': ticket})
+
