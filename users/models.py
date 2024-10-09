@@ -58,3 +58,24 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f'Transaction between {self.seller} and {self.buyer} for Block {self.block.block_number}'
+    
+class Ticket(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tickets')  # کاربر صاحب تیکت
+    ticket_number = models.IntegerField(unique=True)  # شماره تیکت
+    subject = models.CharField(max_length=100)  # موضوع تیکت
+    status = models.CharField(max_length=20, default='در حال بررسی')  # وضعیت تیکت
+    created_at = models.DateTimeField(auto_now_add=True)  # تاریخ ثبت تیکت
+
+    def __str__(self):
+        return f'Ticket #{self.ticket_number} by {self.user.username}'
+
+class TicketMessage(models.Model):
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name='messages')  # ارتباط با تیکت
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='messages')  # کاربر فرستنده پیام
+    message = models.TextField(max_length=500)  # متن پیام
+    file = models.FileField(upload_to='ticket_files/', blank=True, null=True)  # فایل ضمیمه (اختیاری)
+    created_at = models.DateTimeField(auto_now_add=True)  # تاریخ ثبت پیام
+
+    def __str__(self):
+        return f'Message from {self.user.username} on Ticket #{self.ticket.ticket_number}'
+

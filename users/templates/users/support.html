@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>صفحه پشتیبانی</title>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>تیکت جدید ثبت کنید</h2>
+        <a href="{% url 'send_ticket' %}" class="btn btn-primary">send ticket</a>
+
+        <h3 class="mt-4">لیست تیکت‌ها</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>شماره تیکت</th>
+                    <th>موضوع</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                <tr>
+                    <td>{{ ticket.ticket_number }}</td>
+                    <td>{{ ticket.subject }}</td>
+                    <td>{{ ticket.status }}</td>
+                    <td>
+                        <a href="{% url 'send_ticket_detail' ticket.ticket_number %}" class="btn btn-info">پیگیری</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

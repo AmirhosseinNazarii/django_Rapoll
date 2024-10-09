@@ -21,5 +21,10 @@ urlpatterns = [
     path('list_block/<int:block_id>/', views.list_block, name='list_block'),
     path('buy_from_user/', views.buy_from_user, name='buy_from_user'),  # مسیر خرید از کاربر
     path('final_buy_from_user/', views.final_buy_from_user, name='final_buy_from_user'),
+    path('support/', views.support, name='support'),  # صفحه پشتیبانی
+    path('send_ticket/', views.send_ticket, name='send_ticket'),  # ارسال تیکت
+    path('send_ticket/<int:ticket_number>/', views.send_ticket_detail, name='send_ticket_detail'),  # جزئیات تیکت
+    path('close_ticket/<int:ticket_number>/', views.close_ticket, name='close_ticket'),  # بستن تیکت
+    
 
 ]

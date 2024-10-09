@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'rapoll_Rapoll',
+        'NAME': 'rapoll10',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',

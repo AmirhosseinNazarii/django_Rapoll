@@ -13,6 +13,9 @@ from decimal import Decimal
 from .models import Transaction
 from .models import BlockActive
 from django.db.models import Q
+from .models import Ticket, TicketMessage
+from django.core.files.storage import FileSystemStorage
+from django.contrib.auth.decorators import user_passes_test
 
 
 
@@ -375,3 +378,58 @@ def final_buy_from_user(request):
                 'insufficient_funds': True
             })
     
+def support(request):
+    user_id = request.session.get('user_id')
+    user = User.objects.get(id=user_id)
+    tickets = Ticket.objects.filter(user=user)  # تیکت‌های کاربر
+
+    return render(request, 'users/support.html', {'tickets': tickets})
+
+def send_ticket(request):
+    if request.method == 'POST':
+        user_id = request.session.get('user_id')
+        user = User.objects.get(id=user_id)
+
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        file = request.FILES.get('file')
+
+        # ذخیره تیکت
+        ticket_number = Ticket.objects.count() + 10001  # شماره تیکت از 10001 شروع می‌شود
+        ticket = Ticket.objects.create(user=user, subject=subject, ticket_number=ticket_number)
+        
+        # ذخیره پیام
+        if file:
+            fs = FileSystemStorage()
+            file_name = fs.save(file.name, file)
+            TicketMessage.objects.create(ticket=ticket, user=user, message=message, file=file_name)
+        else:
+            TicketMessage.objects.create(ticket=ticket, user=user, message=message)
+
+        return redirect('support')  # به صفحه پشتیبانی برگردید
+
+    return render(request, 'users/send_ticket.html')
+
+def send_ticket_detail(request, ticket_number):
+    ticket = Ticket.objects.get(ticket_number=ticket_number)
+    messages = TicketMessage.objects.filter(ticket=ticket)
+
+    if request.method == 'POST':
+        user_id = request.session.get('user_id')
+        user = User.objects.get(id=user_id)
+        message = request.POST.get('message')
+
+        TicketMessage.objects.create(ticket=ticket, user=user, message=message)
+
+    return render(request, 'users/send_ticket_detail.html', {'ticket': ticket, 'messages': messages})
+
+def close_ticket(request, ticket_number):
+    ticket = Ticket.objects.get(ticket_number=ticket_number)
+    ticket.status = 'بسته شده'
+    ticket.save()
+    return redirect('admin_support')  # به صفحه مدیریت تیکت‌ها برگردید
+
+@user_passes_test(lambda u: u.is_admin)
+def admin_support(request):
+    tickets = Ticket.objects.all()
+    return render(request, 'users/AdminSupport.html', {'tickets': tickets})

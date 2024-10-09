@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>جزئیات تیکت</title>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>جزئیات تیکت #{{ ticket.ticket_number }}</h2>
+        <h4>موضوع: {{ ticket.subject }}</h4>
+        <h4>وضعیت: {{ ticket.status }}</h4>
+        <h5>پیام‌ها:</h5>
+        <div class="border p-3 mb-3">
+            {% for message in messages %}
+            <p><strong>{{ message.user.username }}:</strong> {{ message.message }}</p>
+            {% endfor %}
+        </div>
+        <h5>پاسخ:</h5>
+        <form method="post">
+            {% csrf_token %}
+            <textarea name="message" class="form-control" rows="5" required></textarea>
+            <button type="submit" class="btn btn-success mt-2">ارسال پاسخ</button>
+        </form>
+    </div>
+</body>
+</html>
