@@ -40,6 +40,7 @@ INSTALLED_APPS = [
      'users',
      'main',
      'adminpanel',
+      'support',
      
 ]
 
@@ -81,7 +82,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
+<<<<<<< HEAD
         'NAME': 'rapoll10',
+=======
+        'NAME': 'Rapoll2',
+>>>>>>> ca75bdfea5fae7e7503da14db187485a593887ee
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',

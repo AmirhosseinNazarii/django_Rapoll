@@ -22,4 +22,5 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('', include('main.urls')),  # این خط برای هدایت به صفحه اصلی است
     path('adminpanel/', include('adminpanel.urls')),  # این خط را اضافه کنید
+    path('support/', include('support.urls')),
 ]
