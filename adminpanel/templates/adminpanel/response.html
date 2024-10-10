@@ -1,0 +1,47 @@
+<!-- Rapoll/adminpanel/templates/adminpanel/response.html -->
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پیگیری تیکت</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">پیگیری تیکت شماره {{ ticket.ticket_number }}</h2>
+        <h5>موضوع: {{ ticket.subject }}</h5>
+        <h6>کاربر: {{ ticket.user.username }}</h6>
+
+        <div class="mt-4">
+            <h5>پیام‌ها:</h5>
+            <ul class="list-group">
+                {% for message in messages %}
+                <li class="list-group-item">
+                    <strong>{{ message.user.username }}:</strong> {{ message.message }}
+                    <small class="text-muted d-block">در تاریخ: {{ message.created_at }}</small>
+                    {% if message.file %}
+                    <a href="{{ message.file.url }}" class="btn btn-link">دانلود فایل ضمیمه</a>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="mt-4">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="message">پاسخ جدید:</label>
+                    <textarea name="message" id="message" class="form-control" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="file">ضمیمه:</label>
+                    <input type="file" name="file" id="file" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary">ارسال پاسخ</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

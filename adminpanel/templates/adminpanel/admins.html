@@ -1,41 +1,36 @@
+<!-- Rapoll/adminpanel/templates/adminpanel/admins.html -->
 <!DOCTYPE html>
 <html lang="fa">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لیست تیکت‌ها</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <title>مدیریت تیکت‌ها</title>
 </head>
 <body>
     <div class="container mt-5">
-        <h2>لیست تیکت‌های کاربران</h2>
-        <table class="table">
+        <h2 class="text-center">لیست تیکت‌ها</h2>
+        <table class="table table-striped">
             <thead>
                 <tr>
                     <th>شماره تیکت</th>
-                    <th>موضوع</th>
                     <th>کاربر</th>
+                    <th>موضوع</th>
                     <th>وضعیت</th>
                     <th>عملیات</th>
                 </tr>
             </thead>
             <tbody>
                 {% for ticket in tickets %}
-                {% if ticket.status == "در حال بررسی" %}
                 <tr>
                     <td>{{ ticket.ticket_number }}</td>
-                    <td>{{ ticket.subject }}</td>
                     <td>{{ ticket.user.username }}</td>
+                    <td>{{ ticket.subject }}</td>
                     <td>{{ ticket.status }}</td>
                     <td>
-                        <a href="{% url 'send_ticket_detail' ticket.ticket_number %}" class="btn btn-info">پاسخ</a>
-                        <form action="{% url 'close_ticket' ticket.ticket_number %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger">بستن</button>
-                        </form>
+                        <a href="{% url 'response_ticket' ticket.id %}" class="btn btn-primary">پیگیری</a>
                     </td>
                 </tr>
-                {% endif %}
                 {% endfor %}
             </tbody>
         </table>

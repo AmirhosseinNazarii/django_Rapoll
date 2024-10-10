@@ -15,7 +15,7 @@ from .models import BlockActive
 from django.db.models import Q
 from .models import Ticket, TicketMessage
 from django.core.files.storage import FileSystemStorage
-from django.contrib.auth.decorators import user_passes_test
+
 
 
 
@@ -429,7 +429,3 @@ def close_ticket(request, ticket_number):
     ticket.save()
     return redirect('admin_support')  # به صفحه مدیریت تیکت‌ها برگردید
 
-@user_passes_test(lambda u: u.is_admin)
-def admin_support(request):
-    tickets = Ticket.objects.all()
-    return render(request, 'users/AdminSupport.html', {'tickets': tickets})

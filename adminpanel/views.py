@@ -4,6 +4,9 @@ from users.models import User, UserDetails
 from .models import Block  # اضافه کردن مدل بلوک
 from django.contrib import messages  # برای استفاده از سیستم پیام‌رسانی
 
+from django.http import HttpResponseForbidden
+from users.models import Ticket, TicketMessage
+
 def panel1(request):
     users = User.objects.all()
     return render(request, 'adminpanel/panel1.html', {'users': users})
@@ -82,3 +85,57 @@ def add_block(request):
             messages.error(request, "لطفاً همه فیلدها را پر کنید.")
 
     return redirect('panel1')
+
+# بررسی ادمین بودن
+def is_admin(user):
+    return user.is_admin
+
+def admin_tickets(request):
+    # بررسی اینکه آیا کاربر لاگین کرده است یا خیر
+    if 'user_id' not in request.session:
+        return redirect('login')  # اگر کاربر لاگین نکرده است، به صفحه لاگین هدایت شود
+    
+    # دریافت اطلاعات کاربر از سشن
+    user_id = request.session['user_id']
+    user = get_object_or_404(User, id=user_id)
+
+    # بررسی اینکه آیا کاربر ادمین است یا خیر
+    if not user.is_admin:
+        return HttpResponseForbidden("شما به این بخش دسترسی ندارید.")  # در صورت نبود دسترسی پیام خطا نمایش داده شود
+
+    # نمایش لیست تیکت‌ها برای ادمین
+    tickets = Ticket.objects.all()
+    return render(request, 'adminpanel/admins.html', {'tickets': tickets})
+
+
+
+def response_ticket(request, ticket_id):
+    # بررسی لاگین بودن کاربر
+    if 'user_id' not in request.session:
+        return redirect('login')
+    
+    # دریافت اطلاعات کاربر
+    user_id = request.session['user_id']
+    user = get_object_or_404(User, id=user_id)
+
+    # بررسی اینکه آیا کاربر ادمین است
+    if not user.is_admin:
+        return HttpResponseForbidden("شما به این بخش دسترسی ندارید.")
+
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    messages = TicketMessage.objects.filter(ticket=ticket)
+
+    if request.method == 'POST':
+        message_content = request.POST.get('message')
+        file = request.FILES.get('file')
+
+        if message_content:
+            TicketMessage.objects.create(
+                ticket=ticket,
+                user=user,  # فرستنده ادمین است
+                message=message_content,
+                file=file
+            )
+            return redirect('response_ticket', ticket_id=ticket.id)
+
+    return render(request, 'adminpanel/response.html', {'ticket': ticket, 'messages': messages})
