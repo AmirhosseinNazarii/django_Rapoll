@@ -39,6 +39,75 @@
     </nav>
 
     <div class="container mt-5">
+        <h2>جستجو بلوک با شناسه</h2>
+        <form id="block-search-id-form">
+            <div class="form-group">
+                <label for="block_id">شناسه بلوک:</label>
+                <input type="number" class="form-control" id="block_id" name="block_id" placeholder="شناسه بلوک را وارد کنید">
+            </div>
+            <button type="submit" class="btn btn-primary">جستجو</button>
+        </form>
+    
+        <div id="block-result" class="mt-3">
+            <!-- نتایج جستجو اینجا نمایش داده می‌شود -->
+        </div>
+    </div>
+    
+    <script>
+        $(document).ready(function() {
+            $('#block-search-id-form').on('submit', function(event) {
+                event.preventDefault();
+                var blockId = $('#block_id').val();
+    
+                $.ajax({
+                    url: "{% url 'block_search_id' %}",
+                    method: "GET",
+                    data: {
+                        block_id: blockId
+                    },
+                    success: function(response) {
+    console.log(response.block.status); // بررسی مقدار status در کنسول
+
+    if (response.status === 'success') {
+        $('#block-result').html(`
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">جزئیات بلوک</h5>
+                    <p class="card-text">شهر: ${response.block.city}</p>
+                    <p class="card-text">محله: ${response.block.neighborhood}</p>
+                    
+                    <p class="card-text">خیابان: ${response.block.street}</p>
+                    <p class="card-text">کوچه: ${response.block.alley}</p>
+                    <p class="card-text">شماره بلوک: ${response.block.block_number}</p>
+                    <p class="card-text">قیمت: ${response.block.price} تومان</p>
+                    
+                    ${response.block.status === 0 ? ` 
+                        <form action="{% url 'buy_block' %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="block_id" value="${response.block.id}">
+                            <input type="hidden" name="block_number" value="${response.block.block_number}">
+                            <input type="hidden" name="price" value="${response.block.price}">
+                            <input type="hidden" name="city" value="${response.block.city}">
+                            <input type="hidden" name="neighborhood" value="${response.block.neighborhood}">
+                            <input type="hidden" name="street" value="${response.block.street}">
+                            <input type="hidden" name="alley" value="${response.block.alley}">
+                            <button type="submit" class="btn btn-success">خرید بلوک</button>
+                        </form>` :
+                        '<div class="alert alert-danger">این بلوک به فروش رسیده است.</div>'
+                    }
+                </div>
+            </div>
+        `);
+    } else {
+        $('#block-result').html('<div class="alert alert-danger">' + response.message + '</div>');
+    }
+}
+
+                });
+            });
+        });
+    </script>
+    <div class="container mt-5">
         <h2>خرید بلوک</h2>
         <form id="block-search-form">
             <div class="form-group">

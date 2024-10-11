@@ -429,3 +429,32 @@ def close_ticket(request, ticket_number):
     ticket.save()
     return redirect('admin_support')  # به صفحه مدیریت تیکت‌ها برگردید
 
+
+def block_search_id(request):
+    if request.method == 'GET':
+        block_id = request.GET.get('block_id')  # دریافت مقدار ورودی کاربر
+        
+        if block_id:
+            try:
+                # فیلتر کردن بلوک‌ها بر اساس id
+                block = Block.objects.get(id=block_id)
+                
+                # ارسال اطلاعات بلوک در قالب JSON
+                return JsonResponse({
+                    'status': 'success',
+                    'block': {
+                        'id': block.id,  # اضافه کردن id به اینجا
+                        'city': block.city,
+                        'neighborhood': block.neighborhood,
+                        'street': block.street,
+                        'alley': block.alley,
+                        'block_number': block.block_number,
+                        'price': block.price,
+                        'status': 1 if block.status else 0,  # مقدار status را به صورت عددی (0 یا 1) برمی‌گردانیم
+                    }
+                })
+            except Block.DoesNotExist:
+                # اگر بلوکی با شناسه وارد شده یافت نشد
+                return JsonResponse({'status': 'error', 'message': 'بلوک یافت نشد.'})
+        else:
+            return JsonResponse({'status': 'error', 'message': 'شناسه وارد نشده است.'})

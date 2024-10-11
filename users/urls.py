@@ -25,6 +25,8 @@ urlpatterns = [
     path('send_ticket/', views.send_ticket, name='send_ticket'),  # ارسال تیکت
     path('send_ticket/<int:ticket_number>/', views.send_ticket_detail, name='send_ticket_detail'),  # جزئیات تیکت
     path('close_ticket/<int:ticket_number>/', views.close_ticket, name='close_ticket'),  # بستن تیکت
+     path('block-search-id/', views.block_search_id, name='block_search_id'),
+
     
 
 ]
