@@ -338,8 +338,16 @@ def buy_from_user(request):
 def final_buy_from_user(request):
     if request.method == 'POST':
         transaction_id = request.POST['transaction_id']
-        user = User.objects.get(id=request.session['user_id'])  # دریافت کاربر لاگین شده
+        user = User.objects.get(id=request.session['user_id'])  # دریافت کاربر لاگین شده (خریدار)
         transaction = Transaction.objects.get(id=transaction_id)
+
+        # بررسی اینکه خریدار و فروشنده یکی نباشند
+        if transaction.seller == user:
+            # هدایت به صفحه خطا و نمایش پیام
+            return render(request, 'users/FinalBuyFromUser.html', {
+                'error': True,
+                'message': "شما نمیتوانید بلوکی که خودتان مالک آن هستید رو خریداری کنید!"
+            })
 
         # تبدیل موجودی خریدار به Decimal
         user.balance = Decimal(user.balance)
@@ -385,6 +393,7 @@ def final_buy_from_user(request):
     return render(request, 'users/FinalBuyFromUser.html', {
         'error': True  # پیام خطا در عملیات
     })
+
     
 def support(request):
     user_id = request.session.get('user_id')

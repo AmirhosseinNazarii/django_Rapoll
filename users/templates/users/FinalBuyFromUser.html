@@ -9,7 +9,7 @@
 <body>
 <div class="container mt-5">
     <h2>نتیجه خرید بلوک</h2>
-    
+
     {% if success %}
     <!-- پیام موفقیت آمیز -->
     <div class="alert alert-success" role="alert">
@@ -49,8 +49,9 @@
     {% elif error %}
     <!-- پیام خطا در عملیات -->
     <div class="alert alert-danger" role="alert">
-        خطا در انجام عملیات. لطفا مجددا تلاش کنید.
+        {{ message }}
     </div>
+
     {% endif %}
     
     <a href="{% url 'buy_from_user' %}" class="btn btn-primary mt-3">بازگشت به خرید بلوک</a>
