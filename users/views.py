@@ -338,13 +338,13 @@ def buy_from_user(request):
 def final_buy_from_user(request):
     if request.method == 'POST':
         transaction_id = request.POST['transaction_id']
-        user = User.objects.get(id=request.session['user_id'])
+        user = User.objects.get(id=request.session['user_id'])  # دریافت کاربر لاگین شده
         transaction = Transaction.objects.get(id=transaction_id)
 
         # تبدیل موجودی خریدار به Decimal
         user.balance = Decimal(user.balance)
         block_price = Decimal(transaction.price)
-        
+
         # بررسی موجودی کاربر
         if user.balance >= block_price:
             # کسر موجودی از خریدار
@@ -367,16 +367,24 @@ def final_buy_from_user(request):
             transaction.buyer = user  # ثبت خریدار
             transaction.save()
 
-            # پیام موفقیت
-            messages.success(request, 'خرید بلوک با موفقیت انجام شد.')
-            return redirect('main')  # انتقال به صفحه اصلی
+            # هدایت به صفحه FinalBuyFromUser.html با نمایش فاکتور
+            return render(request, 'users/FinalBuyFromUser.html', {
+                'block': block,
+                'transaction': transaction,
+                'success': True  # خرید موفقیت آمیز
+            })
         else:
             # اگر موجودی کافی نبود
             return render(request, 'users/FinalBuyFromUser.html', {
                 'block': transaction.block,
                 'transaction': transaction,
-                'insufficient_funds': True
+                'insufficient_funds': True  # پیام عدم موجودی کافی
             })
+
+    # اگر به هر دلیل دیگری معامله انجام نشد (به طور پیش‌فرض)
+    return render(request, 'users/FinalBuyFromUser.html', {
+        'error': True  # پیام خطا در عملیات
+    })
     
 def support(request):
     user_id = request.session.get('user_id')
