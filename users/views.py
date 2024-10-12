@@ -317,6 +317,7 @@ def buy_from_user(request):
     neighborhood = request.GET.get('neighborhood')
     street = request.GET.get('street')
     alley = request.GET.get('alley')
+    block_id = request.GET.get('block_id')  # دریافت آیدی بلوک
 
     # فیلتر کردن تراکنش‌هایی که وضعیتشان False است (باز)
     transactions = Transaction.objects.filter(status=False)
@@ -329,11 +330,14 @@ def buy_from_user(request):
         transactions = transactions.filter(street=street)
     if alley:
         transactions = transactions.filter(alley=alley)
+    if block_id:
+        transactions = transactions.filter(block__block_number=block_id)  # جستجو بر اساس آیدی بلوک
 
     return render(request, 'users/BuyFromUser.html', {
         'transactions': transactions,
         'cities': Transaction.objects.values_list('city', flat=True).distinct()  # لیست شهرها برای فیلتر
     })
+
 
 def final_buy_from_user(request):
     if request.method == 'POST':
